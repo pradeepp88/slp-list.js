@@ -4,6 +4,7 @@ import { prompt } from "inquirer";
 import * as readline from "readline";
 import { List } from "./src/list";
 import { Config } from "./src/config";
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "node:constants";
 
 const bchaddr = require("bchaddrjs-slp");
 const Spinner = require("cli-spinner").Spinner;
@@ -25,7 +26,7 @@ if (args.includes("--bchd-rootcert") && args.includes("--bchd-url")) {
 (async () => {
     const slpdbHosts: {[key: string]: string[]} = {
         mainnet: ["https://slpdb.fountainhead.cash", "https://slpserve.imaginary.cash", "http://localhost:3000"],
-        testnet: ["https://tslpdb.bitcoin.com", "http://localhost:3000"],
+        testnet: ["https://slpdb-testnet.fountainhead.cash", "http://localhost:3000"],
     };
 
     const appMode: string = (await prompt([
@@ -197,9 +198,11 @@ if (args.includes("--bchd-rootcert") && args.includes("--bchd-url")) {
         ) as Map<string, Big>;
         spinner.stop(true);
         const slpTotal = Array.from(bals.values()).reduce((a, c) => a.plus(c), new Big(0));
+        var i = 1;
         bals.forEach((v, k) => {
             if (v.gt(0)) {
-                print(k + ",", v.toFixed());
+                print(i, k + ",", v.toFixed());
+                i++;
             }
         });
         print("------------------------------------------------------");
