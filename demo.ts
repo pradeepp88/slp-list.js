@@ -4,7 +4,6 @@ import { prompt } from "inquirer";
 import * as readline from "readline";
 import { List } from "./src/list";
 import { Config } from "./src/config";
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "node:constants";
 
 const bchaddr = require("bchaddrjs-slp");
 const Spinner = require("cli-spinner").Spinner;
@@ -196,6 +195,7 @@ if (args.includes("--bchd-rootcert") && args.includes("--bchd-url")) {
             answers.slpTokenId,
             userHeight,
         ) as Map<string, Big>;
+        //console.log("bals:",bals);
         spinner.stop(true);
         const slpTotal = Array.from(bals.values()).reduce((a, c) => a.plus(c), new Big(0));
         var i = 1;
@@ -222,9 +222,29 @@ if (args.includes("--bchd-rootcert") && args.includes("--bchd-url")) {
         spinner.setSpinnerString("|/-\\");
         spinner.start();
         Config.SetUrl(answers.slpdbHost);
-        const bals =  await List.GetAddressListFor(answers.slpTokenId, userHeight) as Map<string, Big>;
+
+        const addressList = await List.GetAddressListFor(answers.slpTokenId, userHeight) as Map<string, Big>;
+        //console.log("addressList:",addressList);
+
+        //Block Height with equal tokens: 1444297
+
+        addressList.forEach((v,k)=>{
+            if (v.gt(100)){
+                console.log("Deleting Address from List:",bchaddr.toCashAddress(k));
+                addressList.delete(k);
+            }
+        })
+
+        //console.log("addressList:",addressList);
+
+        const bals =  addressList;//await List.GetAddressListFor(answers.slpTokenId, userHeight) as Map<string, Big>;
+        //console.log("bals:",bals);
         spinner.stop(true);
         const slpTotal = Array.from(bals.values()).reduce((a, c) => a.plus(c), new Big(0));
+        //console.log("slpTotal",slpTotal);
+
+        // const newBals = Array.from(bals);
+        // console.log(newBals);
 
         bals.forEach((v, k) => {
             const d = v.div(slpTotal).mul(bchAmount);
