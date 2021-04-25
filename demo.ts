@@ -201,7 +201,7 @@ if (args.includes("--bchd-rootcert") && args.includes("--bchd-url")) {
         var i = 1;
         bals.forEach((v, k) => {
             if (v.gt(0)) {
-                print(i, k + ",", v.toFixed());
+                print(i, bchaddr.toCashAddress(k) + ",", v.toFixed());
                 i++;
             }
         });
@@ -227,9 +227,24 @@ if (args.includes("--bchd-rootcert") && args.includes("--bchd-url")) {
         //console.log("addressList:",addressList);
 
         //Block Height with equal tokens: 1444297
+        //Test token id: 434f4002f7c657f75bcff120f1a88dda9efc1bc4c5703e08b9931c941536bf6f
+
+        //check the balance
+        //create an array of addresses 
+
+        //check the initial balance - calculate reminder
+
+        const addressWinners = [
+            'bchtest:qpveurnsq5ylmj4js073nmr8zvz66jks05qprtdwkd',
+            'bchtest:qrhs9z8pqlqkqhu8kt5k5s7exlrnpymc9gcq076md8',
+            'bchtest:qr5dp63fvfu8zyyaz7xuvzlyf3jfftq08vz6knauxh',
+            'bchtest:qz5r3zy30ze67n4cs9wplr5punch85kufq2a5dlvzz'
+        ];
+
 
         addressList.forEach((v,k)=>{
-            if (v.gt(100)){
+            const s = bchaddr.toCashAddress(k);
+            if (!addressWinners.includes(s)){
                 console.log("Deleting Address from List:",bchaddr.toCashAddress(k));
                 addressList.delete(k);
             }
